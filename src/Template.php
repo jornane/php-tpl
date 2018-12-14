@@ -183,11 +183,12 @@ class Template
         if (null !== $cb) {
             $functionList = \explode('|', $cb);
             foreach ($functionList as $f) {
-                if (!\function_exists($f)) {
-                    if (!\array_key_exists($f, $this->callbackList)) {
+                if (\array_key_exists($f, $this->callbackList)) {
+                    $f = $this->callbackList[$f];
+                } else {
+                    if (!\function_exists($f)) {
                         throw new TemplateException(\sprintf('function "%s" does not exist', $f));
                     }
-                    $f = $this->callbackList[$f];
                 }
                 $v = \call_user_func($f, $v);
             }

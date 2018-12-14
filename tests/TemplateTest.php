@@ -193,4 +193,17 @@ class TemplateTest extends TestCase
             \trim($template->render('tpl9', ['key' => 'value']))
         );
     }
+
+    public function testEscapeEncode()
+    {
+        $template = new Template(
+            [
+                __DIR__.'/tpl',
+            ]
+        );
+        $this->assertSame(
+            'foo%2Bbar',
+            \trim($template->render('tpl10', ['key' => 'foo+bar']))
+        );
+    }
 }
