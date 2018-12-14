@@ -232,4 +232,17 @@ class TemplateTest extends TestCase
             \trim($template->render('tpl12', []))
         );
     }
+
+    public function testBatch()
+    {
+        $template = new Template(
+            [
+                __DIR__.'/tpl',
+            ]
+        );
+        $this->assertSame(
+            "foo<br />\nbar&amp;",
+            \trim($template->render('tpl13', ['foo' => "foo\nbar&"]))
+        );
+    }
 }
