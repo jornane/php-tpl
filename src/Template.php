@@ -28,8 +28,8 @@ use fkooman\Tpl\Exception\TemplateException;
 
 class Template
 {
-    /** @var array */
-    private $templateDirList;
+    /** @var array<string> */
+    private $templateFolderList;
 
     /** @var null|string */
     private $translationFile;
@@ -50,12 +50,12 @@ class Template
     private $callbackList = [];
 
     /**
-     * @param array  $templateDirList
-     * @param string $translationFile
+     * @param array<string> $templateFolderList
+     * @param string        $translationFile
      */
-    public function __construct(array $templateDirList, $translationFile = null)
+    public function __construct(array $templateFolderList, $translationFile = null)
     {
-        $this->templateDirList = $templateDirList;
+        $this->templateFolderList = $templateFolderList;
         $this->translationFile = $translationFile;
     }
 
@@ -88,20 +88,20 @@ class Template
      */
     public function render($templateName, array $templateVariables = [])
     {
-        // XXX see what gets added every time, to see if we don't overdo it!
         $this->templateVariables = \array_merge($this->templateVariables, $templateVariables);
         \extract($this->templateVariables);
         \ob_start();
         /** @psalm-suppress UnresolvableInclude */
         include $this->templatePath($templateName);
         $templateStr = \ob_get_clean();
-        if (0 !== \count($this->layoutList)) {
-            $templateName = \array_keys($this->layoutList)[0];
-            $templateVariables = $this->layoutList[$templateName];
-            // because we use render we must empty the layoutList
-            $this->layoutList = [];
+        if (0 === \count($this->layoutList)) {
+            // we have no layout defined, so simple template...
+            return $templateStr;
+        }
 
-            return $this->render($templateName, $templateVariables);
+        foreach ($this->layoutList as $templateName => $templateVariables) {
+            unset($this->layoutList[$templateName]);
+            $templateStr .= $this->render($templateName, $templateVariables);
         }
 
         return $templateStr;
@@ -113,9 +113,8 @@ class Template
      *
      * @return string
      */
-    public function insert($templateName, array $templateVariables = [])
+    private function insert($templateName, array $templateVariables = [])
     {
-        // XXX we have to do something with the layoutList?! Seems not!
         return $this->render($templateName, $templateVariables);
     }
 
@@ -124,7 +123,7 @@ class Template
      *
      * @return void
      */
-    public function start($sectionName)
+    private function start($sectionName)
     {
         if (null !== $this->activeSectionName) {
             throw new TemplateException(\sprintf('section "%s" already started', $this->activeSectionName));
@@ -137,7 +136,7 @@ class Template
     /**
      * @return void
      */
-    public function stop()
+    private function stop()
     {
         if (null === $this->activeSectionName) {
             throw new TemplateException('no section started');
@@ -153,7 +152,7 @@ class Template
      *
      * @return void
      */
-    public function layout($layoutName, array $templateVariables = [])
+    private function layout($layoutName, array $templateVariables = [])
     {
         $this->layoutList[$layoutName] = $templateVariables;
     }
@@ -163,7 +162,7 @@ class Template
      *
      * @return string
      */
-    public function section($sectionName)
+    private function section($sectionName)
     {
         if (!\array_key_exists($sectionName, $this->sectionList)) {
             throw new TemplateException(\sprintf('section "%s" does not exist', $sectionName));
@@ -233,16 +232,31 @@ class Template
     /**
      * @param string $templateName
      *
+     * @return bool
+     */
+    private function exists($templateName)
+    {
+        foreach ($this->templateFolderList as $templateFolder) {
+            $templatePath = \sprintf('%s/%s.php', $templateFolder, $templateName);
+            if (\file_exists($templatePath)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $templateName
+     *
      * @return string
      */
     private function templatePath($templateName)
     {
-        foreach ($this->templateDirList as $templateDir) {
-            if (\file_exists($templateDir.'/'.$templateName)) {
-                return $templateDir.'/'.$templateName;
-            }
-            if (\file_exists($templateDir.'/'.$templateName.'.php')) {
-                return $templateDir.'/'.$templateName.'.php';
+        foreach ($this->templateFolderList as $templateFolder) {
+            $templatePath = \sprintf('%s/%s.php', $templateFolder, $templateName);
+            if (\file_exists($templatePath)) {
+                return $templatePath;
             }
         }
 

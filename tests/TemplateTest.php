@@ -206,4 +206,30 @@ class TemplateTest extends TestCase
             \trim($template->render('tpl10', ['key' => 'foo+bar']))
         );
     }
+
+    public function testExists()
+    {
+        $template = new Template(
+            [
+                __DIR__.'/tpl',
+            ]
+        );
+        $this->assertSame(
+            'template "tpl11" exists!template "bar11" does NOT exist!',
+            \trim($template->render('tpl11', []))
+        );
+    }
+
+    public function testInsert()
+    {
+        $template = new Template(
+            [
+                __DIR__.'/tpl',
+            ]
+        );
+        $this->assertSame(
+            'YES!',
+            \trim($template->render('tpl12', []))
+        );
+    }
 }
