@@ -1,0 +1,1 @@
+<?=$this->t('Hello %userId%!');
