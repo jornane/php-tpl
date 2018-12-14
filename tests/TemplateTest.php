@@ -164,4 +164,33 @@ class TemplateTest extends TestCase
             \trim($template->render('tpl7', []))
         );
     }
+
+    public function testEscapeFunctions()
+    {
+        $template = new Template(
+            [
+                __DIR__.'/tpl',
+            ]
+        );
+
+        $this->assertSame(
+            'VALUE',
+            \trim($template->render('tpl8', ['key' => 'value']))
+        );
+    }
+
+    public function testEscapeFunctionRegisteredCallback()
+    {
+        $template = new Template(
+            [
+                __DIR__.'/tpl',
+            ]
+        );
+        $template->addCallback('my_strrev', function ($v) { return \strrev($v); });
+
+        $this->assertSame(
+            'EULAV',
+            \trim($template->render('tpl9', ['key' => 'value']))
+        );
+    }
 }
