@@ -13,19 +13,71 @@ time in the future:
 
 If you need neither of these features, I recommend you to use Plates.
 
+# Example
+
+You can define a "layout", say in `base.php`, and various templates that 
+"inherit" this template.
+
+For example, `base.php` contains this:
+
+    <html>
+      <head>
+        <title><?=$this->e('title')?></title>
+      </head>
+      <body>
+      <div class="content">
+          <?=$this->section('content')?>
+      </div>
+      </body>
+    </html>
+
+Then, for example the template `page.php` contains this:
+
+    <?php $this->layout('base.php', ['title' => 'Page'])?>
+    <?php $this->start('content') ?>
+        <p>
+            This is the content that will be placed in the "base.php" template 
+            in the "content" section.
+        </p>
+        <ul>
+            <?php foreach($simpleList as $listEntry): ?>
+                <li><?=$this->e($listEntry)?></li>
+            <?php endforeach ?>
+        </ul>
+    <?php $this->stop() ?>
+
+You'd render the template like this:
+
+    <?php
+
+    $tpl = new Template(
+        [
+            '/path/to/templates'
+        ]
+    );
+    echo $tpl->render('page', ['simpleList' => ['a', 'b', 'c']);
+
 # Themes
 
-The path to the constructor is an array which can contain multiple folders, the
-_first_ folder will be used as the highest priority. If a template (or layout)
-is missing from the folder, the next folder will be checked. So put your theme
-layout / template overrides in the first folder, and the rest in the "default"
-folder.
+The path to the constructor is an array which can contain multiple folders. 
+The first folder points to the "base" template. Additional folders can 
+override specific templates (or all of them).
 
-**NOTE**: most likely the order will change in the near future where the first
-folder is the "base" and the next folders can override certain templates, that
-seems to make most sense!
+    <?php
+
+    $tpl = new Template(
+        [
+            '/path/to/templates',
+            '/path/to/my_theme',
+        ]
+    );
+
+The library will first check the `my_theme` folder for templates, if they are 
+missing there, the search will continue in the preceding folder(s).
 
 # Internationalization
+
+    <?php
 
     $tpl = new Template(['/path/to/templates'], '/path/to/locale/nl_NL.php');
     $tpl->render('foo', ['foo' => 'bar']);

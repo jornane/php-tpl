@@ -154,8 +154,8 @@ class TemplateTest extends TestCase
         // folder is used...
         $template = new Template(
             [
-                __DIR__.'/tpl/theme1',
                 __DIR__.'/tpl',
+                __DIR__.'/tpl/theme1',
             ]
         );
 
