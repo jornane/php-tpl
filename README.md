@@ -33,7 +33,7 @@ For example, `base.php` contains this:
 
 Then, for example the template `page.php` contains this:
 
-    <?php $this->layout('base.php', ['title' => 'Page'])?>
+    <?php $this->layout('base', ['title' => 'Page'])?>
     <?php $this->start('content') ?>
         <p>
             This is the content that will be placed in the "base.php" template 
