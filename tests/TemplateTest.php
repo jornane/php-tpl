@@ -43,6 +43,20 @@ class TemplateTest extends TestCase
         );
     }
 
+    public function testDateFormat()
+    {
+        $template = new Template(
+            [
+                __DIR__.'/tpl',
+            ]
+        );
+
+        $this->assertSame(
+            '2018-01-01',
+            \trim($template->render('tpl14', ['d' => '2018-01-01 09:00:00']))
+        );
+    }
+
     public function testEscaping()
     {
         $template = new Template(

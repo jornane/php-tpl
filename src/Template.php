@@ -24,6 +24,7 @@
 
 namespace fkooman\Tpl;
 
+use DateTime;
 use fkooman\Tpl\Exception\TemplateException;
 
 class Template
@@ -31,10 +32,10 @@ class Template
     /** @var array<string> */
     private $templateFolderList;
 
-    /** @var null|string */
+    /** @var string|null */
     private $translationFile;
 
-    /** @var null|string */
+    /** @var string|null */
     private $activeSectionName = null;
 
     /** @var array */
@@ -173,7 +174,7 @@ class Template
 
     /**
      * @param string      $v
-     * @param null|string $cb
+     * @param string|null $cb
      *
      * @return string
      */
@@ -244,6 +245,19 @@ class Template
         }
 
         return \str_replace(\array_keys($escapedVars), \array_values($escapedVars), $translatedText);
+    }
+
+    /**
+     * Format a date.
+     *
+     * @param string $d
+     * @param string $f
+     *
+     * @return string
+     */
+    private function d($d, $f)
+    {
+        return $this->e(\date_format(new DateTime($d), $f));
     }
 
     /**
