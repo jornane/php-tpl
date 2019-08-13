@@ -20,15 +20,16 @@ You can define a "layout", say in `base.php`, and various templates that
 
 For example, `base.php` contains this:
 
+    <!DOCTYPE html>
     <html>
-      <head>
-        <title><?=$this->e('title')?></title>
-      </head>
-      <body>
-      <div class="content">
-          <?=$this->section('content')?>
-      </div>
-      </body>
+        <head>
+            <title><?=$this->e($title)?></title>
+        </head>
+        <body>
+        <div class="content">
+            <?=$this->section('content')?>
+        </div>
+        </body>
     </html>
 
 Then, for example the template `page.php` contains this:
@@ -49,6 +50,7 @@ Then, for example the template `page.php` contains this:
 You'd render the template like this:
 
     <?php
+    use fkooman\Tpl\Template;
 
     $tpl = new Template(
         [
@@ -64,6 +66,7 @@ The first folder points to the "base" template. Additional folders can
 override specific templates (or all of them).
 
     <?php
+    use fkooman\Tpl\Template;
 
     $tpl = new Template(
         [
@@ -78,6 +81,7 @@ missing there, the search will continue in the preceding folder(s).
 # Internationalization
 
     <?php
+    use fkooman\Tpl\Template;
 
     $tpl = new Template(['/path/to/templates'], '/path/to/locale/nl_NL.php');
     $tpl->render('foo', ['foo' => 'bar']);
