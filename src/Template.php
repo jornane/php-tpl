@@ -139,7 +139,7 @@ class Template
      *
      * @return void
      */
-    private function stop(?$sectionName)
+    private function stop($sectionName = null)
     {
         if (null === $this->activeSectionName) {
             throw new TemplateException('no section started');
