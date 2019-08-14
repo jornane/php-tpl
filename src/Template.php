@@ -135,12 +135,17 @@ class Template
     }
 
     /**
+     * @param ?string $sectionName
+     *
      * @return void
      */
-    private function stop()
+    private function stop(?$sectionName)
     {
         if (null === $this->activeSectionName) {
             throw new TemplateException('no section started');
+        }
+        if (null !== $sectionName && $sectionName !== $this->activeSectionName) {
+            throw new TemplateException(\sprintf('attempted to end section "%s" but current section is "%s"', $sectionName, $this->activeSectionName));
         }
 
         $this->sectionList[$this->activeSectionName] = \ob_get_clean();
